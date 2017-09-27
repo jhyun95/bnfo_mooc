@@ -11,7 +11,31 @@ aamwPath = "AAMWs.txt"
 
 def main():
     ''' Refer to http://rosalind.info/problems/list-view/ '''
-    problemKMER()
+    problemKMF()
+    
+def problemKMF(filename='Data/rosalind_kmp.txt'):
+    header, seq = parse_fasta(filename).items()[0]
+    n = len(seq) # sequence length
+    failure = [0] * n # failure array
+    j = 1 # substring check length
+    for k in xrange(1,n): # search index
+        suffix = seq[k-j+1:k+1]
+        prefix = seq[:j]
+        if suffix == prefix: # if matching at this length, scan forward
+            while suffix == prefix and j <= k:
+                j += 1
+                suffix = seq[k-j+1:k+1]
+                prefix = seq[:j]
+            j -= 1 # overcounted
+        else: # if not matching at this length, scan downward
+            while suffix != prefix:
+                j -= 1
+                suffix = seq[k-j+1:k+1]
+                prefix = seq[:j]
+        failure[k] = j
+        j += 1
+    print ' '.join(map(str,failure))
+    return failure
     
 def problemKMER(filename='Data/rosalind_kmer.txt'):
     import re
